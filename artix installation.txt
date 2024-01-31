@@ -1,129 +1,146 @@
-Downoad ISO
+--------------------
+| Installing artix |
+--------------------
 
+#Login in as root
+root
+artix
 
-Login in as root
-	root
-	artix
-loak keymap
-	loadkeys es (spanish)
-	loadkeys en (english
-	loadkeys us (us english)
-create partitions
-	lsblk
-	cfdisk /dev/sda
-	/dev/sda1 512M
-	/dev/sda2 remaining space
-	write
-	quit
+#loak keymap
+loadkeys es (spanish)
+loadkeys en (english
+loadkeys us (us english)
 
-format partitions
-	mkfs.fat -F 32 /dev/sda1
-	fatlabel /dev/sda1 BOOT
-	mkfs.ext4 -L ROOT /dev/sda2
-mount partitions
-	mkdir /mnt/mount /mnt/boot
-	mount /dev/sda2 /mnt
-	mount/dev/sda1 /mnt/boot
-check internet connection
-	ping -c 3 artixlinux.org
-install base system
-	basestrap /mnt base base-devel runit elogind-runit
+#create partitions
+lsblk
+cfdisk /dev/sda
+/dev/sda1 512M
+/dev/sda2 remaining space
+write
+quit
+
+#format partitions
+mkfs.fat -F 32 /dev/sda1
+fatlabel /dev/sda1 BOOT
+mkfs.ext4 -L ROOT /dev/sda2
+
+#mount partitions
+mkdir /mnt/mount /mnt/boot
+mount /dev/sda2 /mnt
+mount/dev/sda1 /mnt/boot
+
+#check internet connection
+ping -c 3 artixlinux.org
+
+#install base system
+basestrap /mnt base base-devel runit elogind-runit
 install kernel (select desired kernel :linux, linux-lts, or linux-zen)
-	basestrap /mnt linux-zen linux-firmware
-generate fstab
-	fstabgen -U /mnt >> /mnt/etc/fstab
-view fstab
-	cat /mnt/etc/fstab
+basestrap /mnt linux-zen linux-firmware
+
+#generate fstab
+fstabgen -U /mnt >> /mnt/etc/fstab
+#view fstab
+cat /mnt/etc/fstab
 
 
-enter to installed system (chroot)
-	artix-chroot /mnt
-set time zone
-	ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
-set hwclock
-	hwclock --systohc
-set locale
-	pacman -S vim
-	vim /etc/locale.gen #for us, uncomment en_US.UTF-8 UTF-8
-	locale-gen
-set local variables
-	vim /etc/locale.conf
-	export LANG="en_US.UTF-8"
-	export LC_COLLATE="C"
-Set parallel downloads and colors for pacman
-	vim /etc/pacman.conf #uncomment colors and parallels download, then add ILoveCandy
-install bootloader
-	pacman -S grub efibootmgr
-	#optionally, install os-prober
-configure bootloader
-	#if BIOS system
-	grub-install --recheck /dev/sda
-	#if UEFI system
-	grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
-	grub-mkconfig -o /boot/grub/grub.cfg
-add user(s)
-	passwd
-	useradd -m user
-	passwd user
-set hostname
-	vim /etc/hostname
-	#enter hostname and save file
-	vim /etc/hosts
-	/*enter
-	127.0.0.1	localhost
-	::1		localhost
-	127.0.1.1	myhostname.localdomain myhostname
-	*/
-add network manager
-	#for ethernet
-	pacman -S dhcpcd-runit
-	#for wifi
-	pacman -S connman-runit common-gtk
-	pacman -S wpa-supplicant
-	#or
-	pacman -S networkmanager-runit
-	#activate service
-	ln -s /etc/runit/sv/dhcpcd/ run/runit/service
-	#run dhcpcd if needed once
-reboot system
-	exit
-	umount -R /mnt
-	reboot
+#enter to installed system (chroot)
+artix-chroot /mnt
 
+#set time zone
+ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
 
-enter as root or new user
-install de or wm
-	#mate, xfce4, plasma, plasma-desktop (minimal plasma), icewm, fluxbox...
-	#lightdm-gtk-greeter, lightdm-runit, sddm-runit
-	#or login on tty and run startx
-	echo "exec dbus-run-session startplasma_x11" > .xinitrc
-	echo "exec mate-session > .xinitrc
-	echo "exec icewm-session" > .xinitrc
-	echo "exec fluxbox" > .xinitrc
-	#only run first timeping 
+#set hwclock
+hwclock --systohc
 
-Add sudo privielges to non-sudo user
-	su -
-	usermod -aG wheel [user]
-	export VISUAL=vim
-	visudo
-	#uncomment line `root    ALL=(ALL)       ALL` or similar
-install yay
-	git clone https://aur.archlinux.org/yay.git
-	cd yay
-	makepkg -si
+#set locale
+pacman -S vim
+vim /etc/locale.gen #for us, uncomment en_US.UTF-8 UTF-8
+locale-gen
 
+#set local variables
+vim /etc/locale.conf
+export LANG="en_US.UTF-8"
+export LC_COLLATE="C"
 
-=============================================================================
-install xorg and dependencies
-	yay -S xorg xorg-xinit xorg-server xf86-video-fbdev libxinerama xorg-randr xorg-setroot libxft
-install dwm
-	wget https://dl.suckless.org/dwm/dwm-6.4.tar.gz
-	-or-
-	use git clone 
-	sudo make clean install
-create files
-	touch ~/.Xauthority
-	cp /etc/X11/xinit/xinitrc ~/.xinitrc
-	#delete all lines at the end after "fi
-	#append exec dwm
+#Set parallel downloads and colors for pacman
+vim /etc/pacman.conf #uncomment colors and parallels download, then add ILoveCandy
+
+#install bootloader
+pacman -S grub efibootmgr
+#optionally, install os-prober
+
+#configure bootloader
+#for BIOS system
+grub-install --recheck /dev/sda
+#for UEFI system
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
+grub-mkconfig -o /boot/grub/grub.cfg
+
+#add user(s)
+passwd
+useradd -m user
+passwd user
+
+#set hostname
+vim /etc/hostname #enter hostname then save file
+vim /etc/hosts #update with the following
+127.0.0.1	localhost
+::1		localhost
+127.0.1.1	myhostname.localdomain myhostname
+
+#add network manager
+#for ethernet
+pacman -S dhcpcd-runit
+#for wifi
+pacman -S connman-runit common-gtk
+pacman -S wpa-supplicant
+#or
+pacman -S networkmanager-runit
+#activate service
+ln -s /etc/runit/sv/dhcpcd/ run/runit/service
+#run dhcpcd if needed once
+
+#reboot system then log in as root to complete following step
+exit
+umount -R /mnt
+reboot
+
+#Add sudo privielges for non-sudo user
+su -
+usermod -aG wheel [user]
+export VISUAL=vim
+visudo
+#uncomment line `root    ALL=(ALL)       ALL` or similar
+
+#install yay
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+
+-----------------------
+| Installing DE or WM |
+-----------------------
+
+#choose de or wm
+#mate, xfce4, plasma, plasma-desktop (minimal plasma), icewm, fluxbox...
+#lightdm-gtk-greeter, lightdm-runit, sddm-runit
+#or login on tty and run startx
+#echo "exec dbus-run-session startplasma_x11" > .xinitrc
+#echo "exec mate-session > .xinitrc
+#echo "exec icewm-session" > .xinitrc
+#echo "exec fluxbox" > .xinitrc
+#only run first timeping 
+
+#install xorg and dependencies
+yay -S xorg xorg-xinit xorg-server xf86-video-fbdev libxinerama xorg-randr xorg-setroot libxft
+
+#dwm installation
+wget https://dl.suckless.org/dwm/dwm-6.4.tar.gz
+#or git cone project
+sudo make clean install
+
+#create files for dwm
+touch ~/.Xauthority
+cp /etc/X11/xinit/xinitrc ~/.xinitrc
+#delete all lines at the end after "fi
+#append exec dwm
