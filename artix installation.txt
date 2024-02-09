@@ -144,3 +144,6 @@ touch ~/.Xauthority
 cp /etc/X11/xinit/xinitrc ~/.xinitrc
 #delete all lines at the end after "fi
 #append exec dwm
+
+#download and compile st and dwmenu to open terminal in dwm using modkey + enter
+#update config.h modkey to mod4key to change to super(windows) key
