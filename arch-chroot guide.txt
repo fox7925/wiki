@@ -1,0 +1,16 @@
+This guide is useful for mouning an arch-installed disk via a live arch USB.
+Confirm your partitions:
+lbslk -f
+
+Mount subvolumes and boot:
+mount {root partition} /mnt -o subvol=@
+mount {esp partition} /mnt/boot/efi
+
+(Optional) Mount home subvolume:
+mount {root partition /mnt/home -o subvol=@home
+
+Run arch-chroot
+arch-chroot /mnt
+
+For further information, see
+https://wiki.archlinux.org/title/Chroot#Running_on_Btrfs
