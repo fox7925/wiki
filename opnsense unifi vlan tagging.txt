@@ -1,0 +1,27 @@
+This
+is a wiki for configuring vlan tagging for OPNSense and Unifi Netork. This encompasses various steps. This guide applies to OPNsense 25.7.2 and Unifi Network 9.4.19.
+First we will configure the VLAN in OPNSense then in Unifi Network.
+OPNSense:
+1. Define VLAN: Interfaces > Devices > VLAN > Add (bottom right red button) > Define VLAN
+2. Define Interface: Interfaces > Assignments > From Device dropdown menu, select newly created VLAN
+3. Define Basic Configuration:
+a.
+Enable Interface
+b. Enter description for interface
+c. IPv4 Configuration Type: Static IPv4
+d. IPV4 Address: define your IP address
+e.
+Save
+4. Define Firewall rules: Firewall > Rules > Select your newly created Interface
+5.
+Add
+Rule:
+Rule 1:
+Allow Internet
+Rule 2: Allow DNS (Source: Your VLAN net, Destination: This Firewall, Ports: 53 (DNS)
+Rule 3: Allow DHCP (Source: Your VLAN net, Destination: This Firewall, Ports: 67)
+6. Enable DHCP: Services > ISC DHCPv4 > Select your VLAN > Enable DHCP Server > Define your IP range > Save
+****This guide only applies for configuring IPv4, not IPv6. For IPv6, define interface, firewall rule and IPv6 DHCP accordingly.
+Unifi Network:
+Create a network for your VLAN and then create an ethernet profile. Name your profile, set Native VLAN / Network to your VLAN, and set Tagged VLAN Management to ‘Block All"
+Select the port you want to assign VLAN traffic to and choose Manual > Select newly created profile.
